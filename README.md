@@ -1,4 +1,4 @@
-# peer to peer file sharing software 
+# peer to peer file sharing distributed system 
 ## This P2P protocol will use the centralized index approach. Using two programs,
  a centralized 'p2pregistry' and a client/server application 'p2pservent'. The protocol implements the four key
  operations of P2P applications: join, publish, search, and fetch.
