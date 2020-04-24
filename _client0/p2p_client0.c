@@ -11,7 +11,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <string.h>
-
+#include <dirent.h>
 
 #define TRUE 1
 #define PORT 8080
@@ -35,6 +35,7 @@ int inet_pton();
 char socket_buffer[SIZEOF_BUFFER] = {0};
 char message_buff[LENGTHOF_MESSAGE];
 char client_guid[10];
+struct dirent *de;
 //concatanate the two strings
 void combine(char* bam, char *wam){
    int yes, mam;
@@ -119,7 +120,33 @@ void* ping(void* arg){
 int main(int argc, char const *argv[])
 {
 
-    if(argv[1] != NULL){ strcpy(curr_data.servant_files, argv[1]); }
+    if(argv[1] != NULL)
+    { 
+        DIR *dr = opendir(".");
+        char dir_mess[50];
+        int first = 0;
+        while ((de = readdir(dr)) != NULL)
+        {
+            if (first == 0)
+            {
+                if(strstr(de->d_name, ".txt") != NULL || strstr(de->d_name, ".c") != NULL){
+                    strcpy(dir_mess, de->d_name);
+                    strcat(dir_mess, " ");
+                    first = 1;
+                }
+            }
+            else
+            {
+                if(strstr(de->d_name, ".txt") != NULL || strstr(de->d_name, ".c") != NULL){
+                    strcat(dir_mess, de->d_name);
+                    strcat(dir_mess, " ");
+                }
+            }
+        } 
+        
+        strcpy(curr_data.servant_files, dir_mess);
+        printf("\n%s\n", curr_data.servant_files);
+    }
     else{
         printf("\nEnter a file name\n");
         exit(0);
