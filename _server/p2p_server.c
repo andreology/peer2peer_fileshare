@@ -33,6 +33,7 @@ struct P2pRegistry
 //use this global value to hold registered servants
 struct P2pRegistry registry;
 //global variables
+
 int fdserver, fdudp;
 char buffer[BUFFER_LENGTH] = {0};
 int soc_new, soc_new0, unique_id;
@@ -45,6 +46,25 @@ time_t tym_atm;
 
 ssize_t value_rec;
 socklen_t buffer_size;
+
+//Compares file names to filelists
+int searchFile(char* filename){
+    char *start = &filename[10];
+    char *end = &filename[strlen(filename)];
+    char *substr = (char *)calloc(1, end - start);
+    memcpy(substr, start, end-start); //get filename from buffer
+    int len = strlen(substr);
+    if(substr[len-1] == '\n'){ //Removes newline
+        substr[len-1] = '\0';
+    }
+    for(int i = 0; i < 2; i++ ){
+        if(strstr(registry.clients[i].servant_file,substr) != NULL){ //Compares filename to file lists from servants
+            return i + 1;
+        }
+    }
+    return 0;
+}
+
 //manipulating time to be able to check every 200 seconds
 int timein_seconds(char curr_time[9])
 {
@@ -269,7 +289,7 @@ void *file_transfers(void *arg)
         received.live = 1;
         registry.clients[registry.amt++] = received;
         show_client_data(registry.amt - 1);
-        int output = send(soc_new, &received.servant_file, sizeof(received.servant_file), 0);
+        int output = send(soc_new, &received.globalunique_id, sizeof(received.globalunique_id), 0);
     }
     //attemp next connection with client 2
     if ((soc_new0 = accept(fdserver, (struct sockaddr *)&addy_server, (socklen_t *)&sizeof_addy)) < 0)
@@ -291,7 +311,7 @@ void *file_transfers(void *arg)
         received.live = 1;
         registry.clients[registry.amt++] = received;
         show_client_data(registry.amt - 1);
-        int next_output = send(soc_new0, &received.servant_file, sizeof(received.servant_file), 0);
+        int next_output = send(soc_new0, &received.globalunique_id, sizeof(received.globalunique_id), 0);
     }
     //edit sockets to non blocking to prevent deadlock
     fcntl(soc_new0, F_SETFL, O_NONBLOCK);
@@ -302,9 +322,23 @@ void *file_transfers(void *arg)
     {
         int valread = recv(soc_new, buffer, BUFFER_LENGTH, 0);
         int valread2 = recv(soc_new0, buffer, BUFFER_LENGTH, 0);
-
-        printf("%s", buffer);
+        if(strstr(buffer, ".txt") != NULL || strstr(buffer, ".c") != NULL){
+            int location = searchFile(buffer);
+            //printf("%s", buffer);
+            if(location != 0){
+                printf("\nFile is in client[%d]\n",location);
+            }
+            else{
+                printf("\nFile Not Found\n");
+            }
+            
+        }
+        else{
+            printf("%s", buffer);
+        }
         bzero(buffer, sizeof(buffer));
+        
+        
         sleep(3);
     }
 

@@ -36,19 +36,7 @@ char message_buff[MSG_LEN];
 char socket_buffer[SIZEOF_BUFFER] = {0};
 char client_guid[10];
 struct dirent *de;
-//retreive input from user
-void *get_input(void *arg)
-{
-    while (TRUE)
-    {
-        char label[] = "client 1: ";
-        fgets(message_buff, MSG_LEN, stdin);
-        combine(label, message_buff);
-        strcpy(message_buff, label);
-    }
-    pthread_exit(NULL);
-    return NULL;
-}
+
 //concatanate the two strings message + id
 void combine(char *bam, char *wam)
 {
@@ -67,6 +55,21 @@ void combine(char *bam, char *wam)
     }
     bam[yes] = '\0';
 }
+
+//retreive input from user
+void *get_input(void *arg)
+{
+    while (TRUE)
+    {
+        char label[] = "client 1: ";
+        fgets(message_buff, MSG_LEN, stdin);
+        combine(label, message_buff);
+        strcpy(message_buff, label);
+    }
+    pthread_exit(NULL);
+    return NULL;
+}
+
 //TCP based socket to send and retreive messages
 void *file_transfers(void *arg)
 {
@@ -76,7 +79,7 @@ void *file_transfers(void *arg)
 
     int return_value = send(first_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0);
     bzero(socket_buffer, sizeof(socket_buffer));
-    recv(first_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0);
+    recv(first_socket, &curr_data.globalunique_id, sizeof(curr_data.globalunique_id), 0);
 
     printf("...connected client One initiated %d\n", curr_data.globalunique_id);
 

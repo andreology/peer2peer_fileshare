@@ -66,7 +66,7 @@ void* get_input(void* arg){
 void* file_transfers(void* arg){
     int send_return = send(second_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0); // send object
     bzero(socket_buffer, sizeof(socket_buffer));
-    recv(second_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0);         // get message
+    recv(second_socket, &curr_data.globalunique_id, sizeof(curr_data.globalunique_id), 0);         // get message
 
     printf("...received from connected client 2  %d\n", curr_data.globalunique_id);
 
