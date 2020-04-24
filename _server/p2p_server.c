@@ -1,4 +1,4 @@
-//Andre Barajas, Gabriel
+//Andre Barajas, Gabriel Espejo
 //Project 3
 //Spring 2020
 //Peer to Peer file sharing software
@@ -260,7 +260,7 @@ void *file_transfers(void *arg)
         struct P2pServent received;
         unique_id = 0;
 
-        recv(soc_new, &received, sizeof(received), 0);
+        recv(soc_new, &received.servant_file, sizeof(received.servant_file), 0);
         received.globalunique_id = ++unique_id;
         time(&tym_atm);
         data_time = localtime(&tym_atm);
@@ -269,7 +269,7 @@ void *file_transfers(void *arg)
         received.live = 1;
         registry.clients[registry.amt++] = received;
         show_client_data(registry.amt - 1);
-        int output = send(soc_new, &received, sizeof(received), 0);
+        int output = send(soc_new, &received.servant_file, sizeof(received.servant_file), 0);
     }
     //attemp next connection with client 2
     if ((soc_new0 = accept(fdserver, (struct sockaddr *)&addy_server, (socklen_t *)&sizeof_addy)) < 0)
@@ -281,7 +281,7 @@ void *file_transfers(void *arg)
     {
         //attemp to register next client
         printf("\n...succesfully connected tcp socket two\n");
-        recv(soc_new0, &received, sizeof(received), 0);
+        recv(soc_new0, &received.servant_file, sizeof(received.servant_file), 0);
         received.globalunique_id = ++unique_id;
 
         time(&tym_atm);
@@ -291,7 +291,7 @@ void *file_transfers(void *arg)
         received.live = 1;
         registry.clients[registry.amt++] = received;
         show_client_data(registry.amt - 1);
-        int next_output = send(soc_new0, &received, sizeof(received), 0);
+        int next_output = send(soc_new0, &received.servant_file, sizeof(received.servant_file), 0);
     }
     //edit sockets to non blocking to prevent deadlock
     fcntl(soc_new0, F_SETFL, O_NONBLOCK);

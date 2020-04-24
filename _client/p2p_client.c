@@ -1,4 +1,4 @@
-//Andre Barajas, Gabriel
+//Andre Barajas, Gabriel Espejo
 //Project 3
 //Spring 2020
 //Peer to Peer file sharing software
@@ -70,9 +70,13 @@ void combine(char *bam, char *wam)
 //TCP based socket to send and retreive messages
 void *file_transfers(void *arg)
 {
-    int return_value = send(first_socket, &curr_data, sizeof(curr_data), 0);
+    /*int return_value = send(first_socket, &curr_data, sizeof(curr_data), 0);
     bzero(socket_buffer, sizeof(socket_buffer));
-    recv(first_socket, &curr_data, sizeof(curr_data), 0);
+    recv(first_socket, &curr_data, sizeof(curr_data), 0);*/
+
+    int return_value = send(first_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0);
+    bzero(socket_buffer, sizeof(socket_buffer));
+    recv(first_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0);
 
     printf("...connected client One initiated %d\n", curr_data.globalunique_id);
 
