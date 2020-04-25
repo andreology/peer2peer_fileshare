@@ -173,7 +173,7 @@ int main(int argc, char const *argv[])
     }
     else
     {
-        printf("\n Enter a file name\n");
+        printf("\n Enter a file name as a commandline argument\n");
         exit(0);
     }
 

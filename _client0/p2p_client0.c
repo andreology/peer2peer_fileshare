@@ -156,7 +156,7 @@ int main(int argc, char const *argv[])
         printf("\n%s\n", curr_data.servant_files);
     }
     else{
-        printf("\nEnter a file name\n");
+        printf("\nEnter a file name as a commandline argument\n");
         exit(0);
     }
 
