@@ -103,6 +103,8 @@ void* ping(void* arg){
         printf("\n...connected client two with udp socket\n");
     }
 
+    
+    printf("Enter a file name to search (including extension)\n");
 	memset(&addy_server, 0, sizeof(addy_server));
 
 	  //input file server configuration

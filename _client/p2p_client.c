@@ -80,6 +80,7 @@ void *file_transfers(void *arg)
 
     printf("...connected client One initiated %d\n", curr_data.globalunique_id);
 
+    printf("Enter a file name to search (including extension)\n");
     //convert to non blocking socket for security reasons
     fcntl(first_socket, F_SETFL, O_NONBLOCK);
 
