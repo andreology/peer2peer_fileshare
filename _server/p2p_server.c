@@ -47,8 +47,9 @@ time_t tym_atm;
 ssize_t value_rec;
 socklen_t buffer_size;
 
-//Compares file names to filelists
-int searchFile(char* filename){
+//gets filename
+char* getFileName(char * filename)
+{
     char *start = &filename[10];
     char *end = &filename[strlen(filename)];
     char *substr = (char *)calloc(1, end - start);
@@ -57,8 +58,13 @@ int searchFile(char* filename){
     if(substr[len-1] == '\n'){ //Removes newline
         substr[len-1] = '\0';
     }
+    return substr;
+}
+//Compares file names to filelists
+int searchFile(char* filename){
+    char* filenameFinal = getFileName(filename);
     for(int i = 0; i < 2; i++ ){
-        if(strstr(registry.clients[i].servant_file,substr) != NULL){ //Compares filename to file lists from servants
+        if(strstr(registry.clients[i].servant_file,filenameFinal) != NULL){ //Compares filename to file lists from servants
             return i + 1;
         }
     }
@@ -322,23 +328,44 @@ void *file_transfers(void *arg)
     {
         int valread = recv(soc_new, buffer, BUFFER_LENGTH, 0);
         int valread2 = recv(soc_new0, buffer, BUFFER_LENGTH, 0);
-        if(strstr(buffer, ".txt") != NULL || strstr(buffer, ".c") != NULL){
+        if(strstr(buffer, ".txt") != NULL || strstr(buffer, ".c") != NULL){ //If there is a file name in buffer
             int location = searchFile(buffer);
-            //printf("%s", buffer);
-            if(location != 0){
-                printf("\nFile is in client[%d]\n",location);
+            if(location != 0)
+            {
+                sprintf(message, "File is in client[%d]",location);
+                if(valread > -1 && valread2 == -1)
+                {                                        
+                    printf("\n%s\n",message);
+                    int sflag = send(soc_new, message, sizeof(message),0);
+                    memset(message, 0, sizeof(message));
+                }
+                else if (valread == -1 && valread2 > -1)
+                {
+                    printf("\n%s\n",message);
+                    int sflag = send(soc_new0, message, sizeof(message),0);
+                    memset(message, 0, sizeof(message));
+                }
             }
-            else{
-                printf("\nFile Not Found\n");
+            else{            
+                //If there is no file name in buffer
+                strcpy(message,"File Not Found");
+                if(valread > -1 && valread2 == -1){
+                    printf("\n%s\n", message);
+                    int sflag = send(soc_new, message, sizeof(message),0);
+                    memset(message, 0, sizeof(message));
+                }
+                else if(valread == -1 && valread2 > -1){
+                    printf("\n%s\n", message);
+                    int sflag = send(soc_new0, message, sizeof(message), 0);
+                    memset(message, 0, sizeof(message));
+                }
+                
             }
-            
         }
         else{
             printf("%s", buffer);
         }
         bzero(buffer, sizeof(buffer));
-        
-        
         sleep(3);
     }
 

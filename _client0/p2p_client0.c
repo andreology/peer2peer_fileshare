@@ -34,6 +34,7 @@ socklen_t CLADDR_LEN = sizeof(addy_client);
 int inet_pton();
 char socket_buffer[SIZEOF_BUFFER] = {0};
 char message_buff[LENGTHOF_MESSAGE];
+char return_mess[LENGTHOF_MESSAGE];
 char client_guid[10];
 struct dirent *de;
 //concatanate the two strings
@@ -74,8 +75,13 @@ void* file_transfers(void* arg){
     fcntl(second_socket, F_SETFL, O_NONBLOCK);
 
     while(TRUE){
-        send(second_socket , message_buff , strlen(message_buff) , 0);
+        int sendFlag = send(second_socket , message_buff , strlen(message_buff) , 0);
         memset(message_buff, 0, LENGTHOF_MESSAGE);
+        int recvFlag = recv(second_socket, return_mess, sizeof(return_mess), 0);
+        if(recvFlag > 0){
+            printf("%s\n", return_mess);
+            memset(return_mess, 0, LENGTHOF_MESSAGE);
+        }
         //display  message
         printf("%s",socket_buffer);
         bzero(socket_buffer, sizeof(socket_buffer));

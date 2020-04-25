@@ -33,6 +33,7 @@ struct P2pServent curr_data;
 socklen_t CLADDR_LEN = sizeof(client_addr);
 int inet_pton();
 char message_buff[MSG_LEN];
+char return_mess[MSG_LEN];
 char socket_buffer[SIZEOF_BUFFER] = {0};
 char client_guid[10];
 struct dirent *de;
@@ -73,10 +74,6 @@ void *get_input(void *arg)
 //TCP based socket to send and retreive messages
 void *file_transfers(void *arg)
 {
-    /*int return_value = send(first_socket, &curr_data, sizeof(curr_data), 0);
-    bzero(socket_buffer, sizeof(socket_buffer));
-    recv(first_socket, &curr_data, sizeof(curr_data), 0);*/
-
     int return_value = send(first_socket, &curr_data.servant_files, sizeof(curr_data.servant_files), 0);
     bzero(socket_buffer, sizeof(socket_buffer));
     recv(first_socket, &curr_data.globalunique_id, sizeof(curr_data.globalunique_id), 0);
@@ -88,10 +85,15 @@ void *file_transfers(void *arg)
 
     while (TRUE)
     {
+        int sendFlag = send(first_socket, message_buff, strlen(message_buff), 0);
+        memset(message_buff, 0, MSG_LEN); //delete data in  message
+        int recvFlag = recv(first_socket, return_mess, sizeof(return_mess), 0);
+        if (recvFlag > 0)
+        {
+            printf("%s\n", return_mess);
+            memset(return_mess, 0, MSG_LEN);
+        }
 
-        send(first_socket, message_buff, strlen(message_buff), 0);
-        //delete data in  message
-        memset(message_buff, 0, MSG_LEN);
         //show data message
         printf("%s", socket_buffer);
         bzero(socket_buffer, sizeof(socket_buffer));
@@ -102,6 +104,7 @@ void *file_transfers(void *arg)
     pthread_exit(NULL);
     return NULL; //silence
 }
+
 //method to use UDP socket to check user client is alive or not
 void *ping(void *arg)
 {
@@ -147,7 +150,8 @@ int main(int argc, char const *argv[])
         {
             if (first == 0)
             {
-                if(strstr(de->d_name, ".txt") != NULL || strstr(de->d_name, ".c") != NULL){
+                if (strstr(de->d_name, ".txt") != NULL || strstr(de->d_name, ".c") != NULL)
+                {
                     strcpy(dir_mess, de->d_name);
                     strcat(dir_mess, " ");
                     first = 1;
@@ -155,13 +159,14 @@ int main(int argc, char const *argv[])
             }
             else
             {
-                if(strstr(de->d_name, ".txt") != NULL || strstr(de->d_name, ".c") != NULL){
+                if (strstr(de->d_name, ".txt") != NULL || strstr(de->d_name, ".c") != NULL)
+                {
                     strcat(dir_mess, de->d_name);
                     strcat(dir_mess, " ");
                 }
             }
         }
-        
+
         strcpy(curr_data.servant_files, dir_mess);
         printf("\n%s\n", curr_data.servant_files);
     }
