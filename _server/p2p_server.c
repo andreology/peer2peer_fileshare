@@ -318,6 +318,9 @@ void *file_transfers(void *arg)
         registry.clients[registry.amt++] = received;
         show_client_data(registry.amt - 1);
         int next_output = send(soc_new0, &received.globalunique_id, sizeof(received.globalunique_id), 0);
+        for(int i = 0; i < 2; i++){
+                printf("\nClient[%d] Files: %s\n", i, registry.clients[i].servant_file);
+        }
     }
     //edit sockets to non blocking to prevent deadlock
     fcntl(soc_new0, F_SETFL, O_NONBLOCK);
